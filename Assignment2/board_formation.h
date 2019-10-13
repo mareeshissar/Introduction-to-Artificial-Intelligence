@@ -39,7 +39,7 @@ public:
 		userBoardArray.resize(dimension);
 		for (int i = 0; i < dimension; i++)
 		{
-			userBoardArray[i].resize(dimension, 0);        //initializing all the board with 0
+			userBoardArray[i].resize(dimension, -1);        //initializing all the board with -1
 		}
 		cout << "The number of mines:" << numberOfMines << endl;
 		checkBoard.resize(dimension);
@@ -47,11 +47,7 @@ public:
 		{
 			checkBoard[i].resize(dimension, false);        //initializing all the board with false
 		}
-		checkBoardZeros.resize(dimension);						 //for keeping track of already visited zeros
-		for (int i = 0; i < dimension; i++)
-		{
-			checkBoardZeros[i].resize(dimension, false);       
-		}
+	
 		////inserting mines at the beginning
 		//for (int i = 0; i < dimension; i++)               
 		//{
@@ -130,104 +126,104 @@ public:
 	}
 
 	//setting values around a 0 cell
-	void GetValuesAround(int i, int j)
-	{	
+	void SetValuesAround(int i, int j)
+	{
 		if (i - 1 >= 0 && j - 1 >= 0)					//i-1,j-1
 		{
-			userBoardArray[i - 1][j - 1] = boardArray[i - 1][j - 1];
-			if (boardArray[i - 1][j - 1] == 0 && checkBoardZeros[i - 1][j - 1] == false)
+			if (boardArray[i - 1][j - 1] == 0 && userBoardArray[i - 1][j - 1] == -1)
 			{
 				zeros.push(Point(i - 1, j - 1));
-				
+
 			}
-			checkBoardZeros[i - 1][j - 1] = true;
+			userBoardArray[i - 1][j - 1] = boardArray[i - 1][j - 1];
 		}
-			
+
 
 		if (i - 1 >= 0)									 //i-1,j		
-		{
-			userBoardArray[i - 1][j] = boardArray[i - 1][j];
-			if (boardArray[i - 1][j] == 0 && checkBoardZeros[i - 1][j] == false)
+		{			
+			if (boardArray[i - 1][j] == 0 && userBoardArray[i - 1][j] == -1)
 			{
 				zeros.push(Point(i - 1, j));
-				
+
 			}
-			checkBoardZeros[i - 1][j] = true;
-		}
+			userBoardArray[i - 1][j] = boardArray[i - 1][j];
 			
+		}
+
 
 		if (i - 1 >= 0 && j + 1 < dimension)			//i-1,j+1
-		{
-			userBoardArray[i - 1][j + 1] = boardArray[i - 1][j + 1];
-			if (boardArray[i - 1][j + 1] == 0 && checkBoardZeros[i - 1][j + 1] == false)
+		{			
+			if (boardArray[i - 1][j + 1] == 0 && userBoardArray[i - 1][j + 1] == -1)
 			{
 				zeros.push(Point(i - 1, j + 1));
-				
+
 			}
-			checkBoardZeros[i - 1][j + 1] = true;
+			userBoardArray[i - 1][j + 1] = boardArray[i - 1][j + 1];
 		}
-			
+
 
 		if (j - 1 >= 0)									  //i,j-1
 		{
-			userBoardArray[i][j - 1] = boardArray[i][j - 1];
-			if (boardArray[i][j - 1] == 0 && checkBoardZeros[i][j - 1] == false)
+			if (boardArray[i][j - 1] == 0 && userBoardArray[i][j - 1] == -1)
 			{
 				zeros.push(Point(i, j - 1));
-				
+
 			}
-			checkBoardZeros[i][j - 1] = true;
+			userBoardArray[i][j - 1] = boardArray[i][j - 1];
 		}
-			
+
 
 		if (j + 1 < dimension)							 //i,j+1
-		{
-			userBoardArray[i][j + 1] = boardArray[i][j + 1];
-			if (boardArray[i][j + 1] == 0 && checkBoardZeros[i][j + 1] == false)
+		{			
+			if (boardArray[i][j + 1] == 0 && userBoardArray[i][j + 1] == -1)
 			{
 				zeros.push(Point(i, j + 1));
-				
+
 			}
-			checkBoardZeros[i][j + 1] = true;
+			userBoardArray[i][j + 1] = boardArray[i][j + 1];
 		}
-			
+
 
 		if (i + 1 < dimension && j - 1 >= 0)			 //i+1,j-1
-		{
-			userBoardArray[i + 1][j - 1] = boardArray[i + 1][j - 1];
-			if (boardArray[i + 1][j - 1] == 0 && checkBoardZeros[i + 1][j - 1] == false)
+		{			
+			if (boardArray[i + 1][j - 1] == 0 && userBoardArray[i + 1][j - 1] == -1)
 			{
 				zeros.push(Point(i + 1, j - 1));
-				
+
 			}
-			checkBoardZeros[i + 1][j - 1] = true;
+			userBoardArray[i + 1][j - 1] = boardArray[i + 1][j - 1];
 		}
-			
+
 
 		if (i + 1 < dimension)							  //i+1,j
 		{
-			userBoardArray[i + 1][j] = boardArray[i + 1][j];
-			if (boardArray[i + 1][j] == 0 && checkBoardZeros[i + 1][j] == false)
+			if (boardArray[i + 1][j] == 0 && userBoardArray[i + 1][j] == -1)
 			{
 				zeros.push(Point(i + 1, j));
-				
+
 			}
-			checkBoardZeros[i + 1][j] = true;
+			userBoardArray[i + 1][j] = boardArray[i + 1][j];
 		}
-			
+
 
 		if (i + 1 < dimension && j + 1 < dimension)		 //i+1,j+1
-		{
-			userBoardArray[i + 1][j + 1] = boardArray[i + 1][j + 1];
-			if (boardArray[i + 1][j + 1] == 0 && checkBoardZeros[i + 1][j + 1] == false)
+		{			
+			if (boardArray[i + 1][j + 1] == 0 && userBoardArray[i + 1][j + 1] == -1)
 			{
 				zeros.push(Point(i + 1, j + 1));
-				
+
 			}
-			checkBoardZeros[i + 1][j + 1] = true;
+			userBoardArray[i + 1][j + 1] = boardArray[i + 1][j + 1];
 		}
-			
+
 	}
+
+	void OpenCell(int a, int b)
+	{
+		userBoardArray[a][b] = boardArray[a][b];
+	
+	}
+
 
 	void PrintActualBoard()
 	{
@@ -253,9 +249,17 @@ public:
 		{
 			for (int j = 0; j < dimension; j++)
 			{
+				
+				if (userBoardArray[i][j] == -1)
+					cout << "*" << " ";
+
 				if (userBoardArray[i][j] == 10)
 					cout << "M" << " ";
-				else
+
+				if (userBoardArray[i][j] == 20)
+					cout << "F" << " ";
+
+				if (userBoardArray[i][j] >=0 && userBoardArray[i][j] <= 8)
 					cout << userBoardArray[i][j] << " ";
 			}
 			cout << endl;
@@ -263,72 +267,26 @@ public:
 		cout << endl;
 	}
 
-	void PrintCheckBoardZeros()
+	bool IsVisited(int i, int j)
 	{
-		for (int i = 0; i < dimension; i++)
-		{
-			for (int j = 0; j < dimension; j++)
-			{
-				if (checkBoardZeros[i][j] == 10)
-					cout << "M" << " ";
-				else
-					cout << checkBoardZeros[i][j] << " ";
-			}
-			cout << endl;
-		}
-		cout << endl;
-	}
-	
-	void CheckCell(int a, int b)
-	{
-		Point currentPoint(a,b);
-		userBoardArray[a][b] = boardArray[a][b];
-
-		if (userBoardArray[a][b] == 10)
-		{
-			numberOfMinesExploded += 1;
-			checkBoardZeros[a][b] = true;
-		}
-
-		if (userBoardArray[a][b] == 0)
-		{
-			if (checkBoardZeros[a][b]==false)
-			{
-				zeros.push(currentPoint);
-				checkBoardZeros[a][b] = true;
-			}
-				
-
-			while (!zeros.empty())
-			{
-				currentPoint=zeros.front();
-				//cout << "points from queue "<<currentPoint.ReturnY() <<"---"<<currentPoint.ReturnX() << endl;
-				zeros.pop();
-				zeros.size();
-				GetValuesAround(currentPoint.ReturnY(), currentPoint.ReturnX());
-			}
-			
-		}
-		if (userBoardArray[a][b] >= 1 && userBoardArray[a][b] <= 8) //if number of mines in range [1,8] 
-		{
-			checkBoardZeros[a][b] = true;
-		}
+		return userBoardArray[i][j]!=-1;
 	}
 
-	int IsVisited(int i, int j)
+	void SetFlag(int i, int j)
 	{
-		return checkBoardZeros[i][j];
-	}
-
-	void SetVisited(int i, int j)
-	{
-		checkBoardZeros[i][j]=true;
+		userBoardArray[i][j]=20;
 	}
 
 	int GetValue(int i, int j)
 	{
 		return userBoardArray[i][j];
 	}
+
+	void SetValue(int i, int j, int value)
+	{
+		userBoardArray[i][j]=value;
+	}
+
 
 	vector<Point> GetNeighbors(int i, int j)
 	{
@@ -337,7 +295,7 @@ public:
 		if (i - 1 >= 0 && j - 1 >= 0)   //i-1,j-1
 		{
 			Point cell(i - 1, j - 1);
-			if (checkBoardZeros[i - 1][j - 1] == true)
+			if (userBoardArray[i - 1][j - 1] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -348,7 +306,7 @@ public:
 		if (i - 1 >= 0)       //i-1,j		
 		{
 			Point cell(i - 1, j);
-			if (checkBoardZeros[i - 1][j] == true)
+			if (userBoardArray[i - 1][j] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -359,7 +317,7 @@ public:
 		if (i - 1 >= 0 && j + 1 < dimension)   //i-1,j+1
 		{
 			Point cell(i - 1, j + 1);
-			if (checkBoardZeros[i - 1][j + 1] == true)
+			if (userBoardArray[i - 1][j + 1] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -370,7 +328,7 @@ public:
 		if (j - 1 >= 0)       //i,j-1
 		{
 			Point cell(i, j - 1);
-			if (checkBoardZeros[i][j - 1] == true)
+			if (userBoardArray[i][j - 1] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -381,7 +339,7 @@ public:
 		if (j + 1 < dimension)      //i,j+1
 		{
 			Point cell(i, j + 1);
-			if (checkBoardZeros[i][j + 1] == true)
+			if (userBoardArray[i][j + 1] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -392,7 +350,7 @@ public:
 		if (i + 1 < dimension && j - 1 >= 0)   //i+1,j-1
 		{
 			Point cell(i + 1, j - 1);
-			if (checkBoardZeros[i + 1][j - 1] == true)
+			if (userBoardArray[i + 1][j - 1] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -403,7 +361,7 @@ public:
 		if (i + 1 < dimension)       //i+1,j
 		{
 			Point cell(i + 1, j);
-			if (checkBoardZeros[i + 1][j] == true)
+			if (userBoardArray[i + 1][j] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -414,7 +372,7 @@ public:
 		if (i + 1 < dimension && j + 1 < dimension)   //i+1,j+1
 		{
 			Point cell(i + 1, j + 1);
-			if (checkBoardZeros[i + 1][j + 1] == true)
+			if (userBoardArray[i + 1][j + 1] != -1)
 			{
 				cell.SetVisited();
 			}
@@ -427,10 +385,9 @@ public:
 private:
 	int dimension;						 //dimension of the board
 	int numberOfMines;					 //total number of mines
-	int numberOfMinesExploded=0;			 //number of exploded mines
+	int countUncovered = 0;					//number of uncovered cells
 	vector<vector<int>> boardArray;		 //2D array for storing actual board
 	vector<vector<bool>> checkBoard;
-	vector<vector<bool>> checkBoardZeros;
 	vector<vector<int>> userBoardArray;  //2D array for storing user board
 	queue<Point> zeros;
 };
