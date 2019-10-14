@@ -34,33 +34,11 @@ public:
 	{
 		return y;
 	}
-	void SetVisited()
-	{
-		visited=true;
-	}
-	bool GetVisited()
-	{
-		return visited;
-	}
-	
-	//bool operator <(const Point& a) const               //define operator < for queue
-	//{
-	//	return ((this->priority) > a.priority);
-	//}
-	//bool operator >(const Point& a) const               //define operator > for queue
-	//{
-	//	return ((this->priority) > a.priority);
-	//}
-	//struct Comparepoints {                                      //define compartor for STLs
-	//	bool operator()(Point const& p1, Point const& p2)
-	//	{
-	//		return p1.priority < p2.priority;
-	//	}
-	//};
+
 private:
 	int x;              //x-coordinate
 	int y;              //y-coordinate
-	bool visited = false;					//checks whether cell was visited before
+	
 };
 
 #endif /* point_h */
