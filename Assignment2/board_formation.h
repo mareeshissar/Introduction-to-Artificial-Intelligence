@@ -26,6 +26,7 @@ class Board
 public:
 	Board(int d, int n)
 	{
+		countUncovered = 0;
 		dimension = d;
 		numberOfMines = n;
 		int count = 1;
@@ -289,10 +290,10 @@ public:
 private:
 	int dimension;						 //dimension of the board
 	int numberOfMines;					 //total number of mines
-	int countUncovered = 0;					//number of uncovered cells
-	vector<vector<int>> boardArray;		 //2D array for storing actual board
-	vector<vector<bool>> checkBoard;
-	vector<vector<int>> userBoardArray;  //2D array for storing user facing board
+	int countUncovered;					//number of uncovered cells
+	vector<vector<int> > boardArray;		 //2D array for storing actual board
+	vector<vector<bool> > checkBoard;
+	vector<vector<int> > userBoardArray;  //2D array for storing user facing board
 	
 };
 
