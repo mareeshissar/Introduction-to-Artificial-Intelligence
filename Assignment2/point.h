@@ -3,8 +3,7 @@
 //  point.h
 //  AI_assignment_2
 //
-//  Created by Mareesh Kumar Issar on 10/04/19.
-// 
+//
 //
 
 #ifndef point_h
@@ -54,3 +53,4 @@ private:
 };
 
 #endif /* point_h */
+
