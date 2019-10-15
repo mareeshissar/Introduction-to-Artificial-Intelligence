@@ -3,8 +3,7 @@
 //  board_formation.h
 //  AI_assignment_2
 //
-//  Created by Mareesh Kumar Issar on 10/04/19.
-// 
+//
 //
 
 
@@ -27,8 +26,8 @@ public:
 	Board(int d, int n)
 	{
 		countUncovered = 0;
-		dimension = d;
-		numberOfMines = n;
+		dimension = d;		//the dimension of the minesweeper
+		numberOfMines = n;	//the number of mines decided first by the board
 		int count = 1;
 		int lastMineI=0, lastMineJ=0;
 
@@ -37,12 +36,15 @@ public:
 		{
 			boardArray[i].resize(dimension, 0);        //initializing all the board with 0
 		}
+
 		userBoardArray.resize(dimension);
 		for (int i = 0; i < dimension; i++)
 		{
 			userBoardArray[i].resize(dimension, -1);        //initializing all the board with -1
 		}
+
 		cout << "The number of mines:" << numberOfMines << endl;
+
 		checkBoard.resize(dimension);
 		for (int i = 0; i < dimension; i++)
 		{
@@ -67,6 +69,47 @@ public:
 		}
 		
 	}
+
+	void Shuffle_set()
+	{
+        srand(time(0));
+		int shuffle_array[dimension * dimension];
+        
+        for(int i=0; i < dimension*dimension; i++)
+        {
+            if(i < numberOfMines)           //set the firnt N = number of mines == 10
+                shuffle_array[i] = 10;
+            else
+                shuffle_array[i] = 0;
+        }
+        
+        for(int i=0; i < numberOfMines; i++)
+        {
+            if(rand()%2==0)
+                shuffle_array[i] = numberOfMines + rand() % ((dimension*dimension)-numberOfMines-1);
+        }
+        
+        for(int i = 0; i < dimension*dimension; i++)
+        {
+            if(shuffle_array[i] == 10)
+            {
+                int y = i%dimension;
+                int x = i/dimension;
+                boardArray[y][x] = true;
+                GenerateValuesAroundMines(y, x);
+            }
+        }
+		
+	}
+    
+    
+    /*void print_shuffle_array(int a[])
+    {
+        for (int i=0;i<dimension*dimension;i++)
+        {
+            cout <<
+        }
+    }*/
 
 	//filling values around a mine cell
 	void GenerateValuesAroundMines(int i,int j)
@@ -288,12 +331,12 @@ public:
 
 
 private:
-	int dimension;						 //dimension of the board
-	int numberOfMines;					 //total number of mines
-	int countUncovered;					//number of uncovered cells
-	vector<vector<int> > boardArray;		 //2D array for storing actual board
+	int dimension;					 //dimension of the board
+	int numberOfMines;				 //total number of mines
+	int countUncovered;				//number of uncovered cells
+	vector<vector<int> > boardArray;		//2D array for storing actual board
 	vector<vector<bool> > checkBoard;
-	vector<vector<int> > userBoardArray;  //2D array for storing user facing board
+	vector<vector<int> > userBoardArray;            //2D array for storing user facing board
 	
 };
 
