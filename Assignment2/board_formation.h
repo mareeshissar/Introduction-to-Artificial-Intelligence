@@ -93,8 +93,8 @@ public:
         {
             if(shuffle_array[i] == 10)
             {
-                int y = i%dimension;
-                int x = i/dimension;
+                int x = i%dimension;
+                int y = i/dimension;
                 boardArray[y][x] = true;
                 GenerateValuesAroundMines(y, x);
             }
