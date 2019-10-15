@@ -30,6 +30,7 @@ public:
 		numberOfMines = n;
 		int count = 1;
 		int lastMineI=0, lastMineJ=0;
+		countUncovered = 0;
 
 		boardArray.resize(dimension);
 		for (int i = 0; i < dimension; i++)
@@ -153,6 +154,7 @@ public:
 
 	void SetFlag(int i, int j)
 	{
+		cout << "flagged mines " << i << "--" << j << endl;
 		userBoardArray[i][j]=20;
 		countUncovered+= 1 ;
 	}
@@ -229,6 +231,77 @@ public:
 		return neighbors;
 	}
 
+	//returns a vector consisting of neighboring cells
+	vector<Point> GetNeighborsCSP(int i, int j)
+	{
+		vector<Point> neighbors;
+
+		if (i - 1 >= 0 && j - 1 >= 0 && userBoardArray[i-1][j-1]==-1 )   //i-1,j-1
+		{
+			Point cell(i - 1, j - 1);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+
+		}
+
+
+		if (i - 1 >= 0 && userBoardArray[i - 1][j] == -1)       //i-1,j		
+		{
+			Point cell(i - 1, j);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+		}
+
+
+		if (i - 1 >= 0 && j + 1 < dimension && userBoardArray[i - 1][j + 1] == -1)   //i-1,j+1
+		{
+			Point cell(i - 1, j + 1);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+		}
+
+
+		if (j - 1 >= 0 && userBoardArray[i][j - 1] == -1)       //i,j-1
+		{
+			Point cell(i, j - 1);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+		}
+
+
+		if (j + 1 < dimension && userBoardArray[i][j + 1] == -1)      //i,j+1
+		{
+			Point cell(i, j + 1);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+		}
+
+
+		if (i + 1 < dimension && j - 1 >= 0 && userBoardArray[i + 1][j - 1] == -1)   //i+1,j-1
+		{
+			Point cell(i + 1, j - 1);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+		}
+
+
+		if (i + 1 < dimension && userBoardArray[i + 1][j] == -1)       //i+1,j
+		{
+			Point cell(i + 1, j);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+		}
+
+
+		if (i + 1 < dimension && j + 1 < dimension && userBoardArray[i + 1][j + 1] == -1)   //i+1,j+1
+		{
+			Point cell(i + 1, j + 1);
+			cell.SetIsHiddenNeighbor();
+			neighbors.push_back(cell);
+		}
+		return neighbors;
+	}
+
 	//returns number of possible neighbors around a cell
 	int GetNeighborCount(int i, int j)
 	{
@@ -289,7 +362,7 @@ public:
 private:
 	int dimension;						 //dimension of the board
 	int numberOfMines;					 //total number of mines
-	int countUncovered = 0;					//number of uncovered cells
+	int countUncovered ;					//number of uncovered cells
 	vector<vector<int>> boardArray;		 //2D array for storing actual board
 	vector<vector<bool>> checkBoard;
 	vector<vector<int>> userBoardArray;  //2D array for storing user facing board
