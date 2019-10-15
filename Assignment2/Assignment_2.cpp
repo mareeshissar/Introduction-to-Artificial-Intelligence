@@ -10,9 +10,12 @@
 #include "board_formation.h"
 
 #include <iostream>
+#include<vector>
+#include<unordered_map>
 
 int main()
 {
+	
 	int d, n;
 	vector<Point> neighbors;
 	int flaggedMines = 0;
@@ -78,7 +81,7 @@ int main()
 				if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == true)
 				{
 					//updating number of revealed mines
-					if (b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == 10)
+					if (b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == 10 || b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == 20)
 						numberOfRevealedMines += 1;
 
 					//updating number of revealed safe neighbors
@@ -107,7 +110,7 @@ int main()
 						//flagging the mines
 						b1.SetFlag(neighbors[i].ReturnY(), neighbors[i].ReturnX());
 						flaggedMines += 1;
-						unexploredNeighborCells.push(Point(neighbors[i].ReturnY(), neighbors[i].ReturnX()));
+						//unexploredNeighborCells.push(Point(neighbors[i].ReturnY(), neighbors[i].ReturnX()));
 						//cout << "cell pushed in queue is " << neighbors[i].ReturnY() << " , " << neighbors[i].ReturnX() << endl;
 					}
 				}
@@ -133,6 +136,9 @@ int main()
 		cout << "opened cells till now- " << b1.GetCountUncovered() << endl;
 	}
 	b1.PrintUserBoard();
+	
+
+
 	return 0;
 
 }
