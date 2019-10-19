@@ -28,9 +28,7 @@ public:
 		countUncovered = 0;
 		dimension = d;		//the dimension of the minesweeper
 		numberOfMines = n;	//the number of mines decided first by the board
-		int count = 1;
-		int lastMineI=0, lastMineJ=0;
-		countUncovered = 0;
+
 
 		boardArray.resize(dimension);
 		for (int i = 0; i < dimension; i++)
@@ -54,7 +52,8 @@ public:
 	
 		//shuffling the mines randomly
 		srand(time(0));
-		for (int i = 0; i < numberOfMines; i++)         //swap mine with an open position
+        Shuffle_set();
+		/*for (int i = 0; i < numberOfMines; i++)         //swap mine with an open position
 		{
 			int p1;
 			int p2;
@@ -67,7 +66,7 @@ public:
 			checkBoard[p1][p2] = true;
 			boardArray[p1][p2] = 10;
 			GenerateValuesAroundMines(p1, p2);
-		}
+		}*/
 		
 	}
 
@@ -87,16 +86,21 @@ public:
         for(int i=0; i < numberOfMines; i++)
         {
             if(rand()%2==0)
-                shuffle_array[i] = numberOfMines + rand() % ((dimension*dimension)-numberOfMines-1);
+            {
+                int temp = shuffle_array[i];
+                int iter = numberOfMines + rand() % ((dimension*dimension)-numberOfMines-1);
+                shuffle_array[i] = shuffle_array[iter];
+                shuffle_array[iter] = temp;
+            }
         }
         
         for(int i = 0; i < dimension*dimension; i++)
         {
             if(shuffle_array[i] == 10)
             {
-                int x = i%dimension;
-                int y = i/dimension;
-                boardArray[y][x] = true;
+                int y = i%dimension;
+                int x = i/dimension;
+                boardArray[y][x] = 10;
                 GenerateValuesAroundMines(y, x);
             }
         }
@@ -115,28 +119,28 @@ public:
 	//filling values around a mine cell
 	void GenerateValuesAroundMines(int i,int j)
 	{
-		if (i - 1 >= 0 && j - 1 >= 0 && boardArray[i-1][j-1]!=10)   //i-1,j-1
+		if (i - 1 >= 0 && j - 1 >= 0 && boardArray[i-1][j-1]!=10 && boardArray[i-1][j-1]!=20)   //i-1,j-1
 			boardArray[i - 1][j - 1] += 1;
 
-		if (i - 1 >= 0 && boardArray[i-1][j] != 10)       //i-1,j		
+		if (i - 1 >= 0 && boardArray[i-1][j] != 10 && boardArray[i-1][j]!=20 )       //i-1,j
 			boardArray[i - 1][j] += 1;
 		
-		if (i - 1 >= 0 && j + 1 < dimension && boardArray[i-1][j+1] != 10)   //i-1,j+1
+		if (i - 1 >= 0 && j + 1 < dimension && boardArray[i-1][j+1] != 10 && boardArray[i-1][j+1] != 20)   //i-1,j+1
 			boardArray[i - 1][j + 1] += 1;
 		
-		if (j - 1 >= 0 && boardArray[i][j-1] != 10)       //i,j-1
+		if (j - 1 >= 0 && boardArray[i][j-1] != 10 && boardArray[i][j-1] != 20)       //i,j-1
 			boardArray[i][j - 1] += 1;
 		
-		if (j + 1 < dimension && boardArray[i][j+1] != 10)      //i,j+1
+		if (j + 1 < dimension && boardArray[i][j+1] != 10 && boardArray[i][j+1] != 20)      //i,j+1
 			boardArray[i][j + 1] += 1;
 		
-		if (i + 1 < dimension && j - 1 >= 0 && boardArray[i+1][j-1] != 10)   //i+1,j-1
+		if (i + 1 < dimension && j - 1 >= 0 && boardArray[i+1][j-1] != 10 && boardArray[i+1][j-1] != 20)   //i+1,j-1
 			boardArray[i + 1][j - 1] += 1;
 
-		if (i + 1 < dimension && boardArray[i+1][j] != 10)       //i+1,j
+		if (i + 1 < dimension && boardArray[i+1][j] != 10 && boardArray[i+1][j] != 20)       //i+1,j
 			boardArray[i + 1][j] += 1;
 
-		if (i + 1 < dimension && j + 1 < dimension && boardArray[i+1][j+1] != 10)   //i+1,j+1
+		if (i + 1 < dimension && j + 1 < dimension && boardArray[i+1][j+1] != 10 && boardArray[i+1][j+1] != 20)   //i+1,j+1
 			boardArray[i + 1][j + 1] += 1;
 	}
 
@@ -198,7 +202,6 @@ public:
 
 	void SetFlag(int i, int j)
 	{
-		cout << "flagged mines " << i << "--" << j << endl;
 		userBoardArray[i][j]=20;
 		countUncovered+= 1 ;
 	}
@@ -275,77 +278,6 @@ public:
 		return neighbors;
 	}
 
-	//returns a vector consisting of neighboring cells
-	vector<Point> GetNeighborsCSP(int i, int j)
-	{
-		vector<Point> neighbors;
-
-		if (i - 1 >= 0 && j - 1 >= 0 && userBoardArray[i-1][j-1]==-1 )   //i-1,j-1
-		{
-			Point cell(i - 1, j - 1);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-
-		}
-
-
-		if (i - 1 >= 0 && userBoardArray[i - 1][j] == -1)       //i-1,j		
-		{
-			Point cell(i - 1, j);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-		}
-
-
-		if (i - 1 >= 0 && j + 1 < dimension && userBoardArray[i - 1][j + 1] == -1)   //i-1,j+1
-		{
-			Point cell(i - 1, j + 1);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-		}
-
-
-		if (j - 1 >= 0 && userBoardArray[i][j - 1] == -1)       //i,j-1
-		{
-			Point cell(i, j - 1);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-		}
-
-
-		if (j + 1 < dimension && userBoardArray[i][j + 1] == -1)      //i,j+1
-		{
-			Point cell(i, j + 1);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-		}
-
-
-		if (i + 1 < dimension && j - 1 >= 0 && userBoardArray[i + 1][j - 1] == -1)   //i+1,j-1
-		{
-			Point cell(i + 1, j - 1);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-		}
-
-
-		if (i + 1 < dimension && userBoardArray[i + 1][j] == -1)       //i+1,j
-		{
-			Point cell(i + 1, j);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-		}
-
-
-		if (i + 1 < dimension && j + 1 < dimension && userBoardArray[i + 1][j + 1] == -1)   //i+1,j+1
-		{
-			Point cell(i + 1, j + 1);
-			cell.SetIsHiddenNeighbor();
-			neighbors.push_back(cell);
-		}
-		return neighbors;
-	}
-
 	//returns number of possible neighbors around a cell
 	int GetNeighborCount(int i, int j)
 	{
@@ -404,14 +336,12 @@ public:
 
 
 private:
-
-	int dimension;						 //dimension of the board
-	int numberOfMines;					 //total number of mines
-	int countUncovered ;					//number of uncovered cells
-	vector<vector<int>> boardArray;		 //2D array for storing actual board
-	vector<vector<bool>> checkBoard;
-	vector<vector<int>> userBoardArray;  //2D array for storing user facing board
-
+	int dimension;					 //dimension of the board
+	int numberOfMines;				 //total number of mines
+	int countUncovered;				//number of uncovered cells
+	vector<vector<int> > boardArray;		//2D array for storing actual board
+	vector<vector<bool> > checkBoard;
+	vector<vector<int> > userBoardArray;            //2D array for storing user facing board
 	
 };
 
