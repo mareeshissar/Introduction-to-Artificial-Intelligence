@@ -58,7 +58,6 @@ public:
 	}
 
 
-
 private:
 	int x;              //x-coordinate
 	int y;              //y-coordinate

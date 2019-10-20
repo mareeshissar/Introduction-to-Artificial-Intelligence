@@ -311,99 +311,75 @@ public:
 	{
 		vector<Point> neighbors;
 		
-		if (i - 1 >= centrali-1 && j - 1 >= centralj-1)   //i-1,j-1
+		if (userBoardArray[i - 1][j - 1] == -1)   //i-1,j-1
 		{
 			Point cell(i - 1, j - 1);
-			if (userBoardArray[i - 1][j - 1] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-
-			}
-				
+			cell.SetIsHiddenNeighbor(1);
+			neighbors.push_back(cell);
 
 		}
 
 
-		if (i - 1 >= centrali-1)       //i-1,j		
+		if (userBoardArray[i - 1][j] == -1)       //i-1,j		
 		{
 			Point cell(i - 1, j);
-			if (userBoardArray[i - 1][j] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-			}
-				
+			cell.SetIsHiddenNeighbor(1);
+			neighbors.push_back(cell);
+			
 		}
 
 
-		if (i - 1 >= centrali-1 && j + 1 <= centralj+1)   //i-1,j+1
+		if (userBoardArray[i - 1][j + 1] == -1)   //i-1,j+1
 		{
 			Point cell(i - 1, j + 1);
-			if (userBoardArray[i - 1][j + 1] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-			}
-				
+			cell.SetIsHiddenNeighbor(1);
+		    neighbors.push_back(cell);
+			
 		}
 
 
-		if (j - 1 >= centralj-1)       //i,j-1
+		if (userBoardArray[i][j - 1] == -1)       //i,j-1
 		{
 			Point cell(i, j - 1);
-			if (userBoardArray[i][j - 1] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-			}
-				
+			cell.SetIsHiddenNeighbor(1);
+			neighbors.push_back(cell);
+					
 		}
 
 
-		if (j + 1 <= centralj+1)      //i,j+1
+		if (userBoardArray[i][j + 1] == -1)      //i,j+1
 		{
 			Point cell(i, j + 1);
-			if (userBoardArray[i][j + 1] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-			}
+			cell.SetIsHiddenNeighbor(1);
+			neighbors.push_back(cell);
 				
 		}
 
 
-		if (i + 1 <= centrali+1 && j - 1 >= centralj-1)   //i+1,j-1
+		if (userBoardArray[i + 1][j - 1] == -1)   //i+1,j-1
 		{
 			Point cell(i + 1, j - 1);
-			if (userBoardArray[i + 1][j - 1] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-			}
-				
+     		cell.SetIsHiddenNeighbor(1);
+			neighbors.push_back(cell);
+	
 		}
 
 
-		if (i + 1 <= centrali+1)       //i+1,j
+		if (userBoardArray[i + 1][j] == -1)       //i+1,j
 		{
 			Point cell(i + 1, j);
-			if (userBoardArray[i + 1][j] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-			}
+			cell.SetIsHiddenNeighbor(1);
+			neighbors.push_back(cell);
+		
 		}
 
 
-		if (i + 1 <= centrali+1 && j + 1 <= centralj+1)  //i+1,j+1
+		if (userBoardArray[i + 1][j + 1] == -1)  //i+1,j+1
 		{
 			Point cell(i + 1, j + 1);
-			if (userBoardArray[i + 1][j + 1] == -1)
-			{
-				cell.SetIsHiddenNeighbor(1);
-				neighbors.push_back(cell);
-			}
+			cell.SetIsHiddenNeighbor(1);
+			neighbors.push_back(cell);
+	
 		}
 		return neighbors;
 	}
