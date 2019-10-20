@@ -39,7 +39,7 @@ int main()
 
 	
 	vector<Point> inference_queue;                 //queue for doing infering process again and again after each point evaluation
-	while (b1.GetCountUncovered() < d * d)
+	while (b1.GetCountUncovered() != d * d)
 	{
 
 		int p1;
@@ -214,7 +214,7 @@ int main()
 		b1.PrintUserBoard();
 
 		
-
+		
 		cout << "-----------------------------------------Now using CSP to infer more " << endl;
 		//**********************************************************************************APPLYING CSP*************************************************************
 		
@@ -375,7 +375,7 @@ int main()
 								for (int d = 0; d < longerEquationSize; d++)
 								{
 									//if point has hidden neighbor
-									if (windowCSP[longerEquation][d].GetIsHiddenNeighbor() == 1)
+									if (windowCSP[longerEquation][d].GetIsHiddenNeighbor() == 1 && b1.IsVisited(windowCSP[longerEquation][d].ReturnY(), windowCSP[longerEquation][d].ReturnX())==false)
 									{
 										cout << "-------------------------point " << windowCSP[longerEquation][d].ReturnY() << " " << windowCSP[longerEquation][d].ReturnX() << " flagged as mine by csp" << endl;
 										//flagging the mines
@@ -400,7 +400,11 @@ int main()
 
 			}
 		}
-
+		else
+		break;
+		cout << "number of flagged mines after csp- " << flaggedMines << endl;
+		cout << "opened cells till now after csp- " << b1.GetCountUncovered() << endl;
+		
 		
 		//cout << "Printing user board after all the deductions are made using CSP" << endl;
 		//b1.PrintUserBoard();
