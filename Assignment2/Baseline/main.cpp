@@ -24,6 +24,7 @@ int main()
     cin >> n;
     
     Board b1(d, n);
+    cout << "The original board is:"<<endl;
     b1.PrintActualBoard();
     b1.PrintUserBoard();
     
@@ -42,14 +43,16 @@ int main()
         int p2;
         int totalNumberOfMines = 0;
         
+        // ****************************************GET A RANDOM POINT********************************************************************************************************
         do{
             p1 = 0 + rand() % (d);
             p2 = 0 + rand() % (d);
         } while (b1.IsVisited(p1, p2) == true);
         cout << "(" << p1 << "," << p2 << ")" << endl;               //printing the open position to swap
+        // ********************************************************************************************************************************************************************
+        
         
         b1.OpenCell(p1, p2);                                         //generated a random point and opened it
-
         if (b1.GetValue(p1, p2) == 10)
         {
             numberOfMinesExploded += 1;
@@ -58,90 +61,93 @@ int main()
         b1.PrintUserBoard();
         
         //agent function
-        Point currentPoint(p1, p2);
-        totalNumberOfMines = b1.GetValue(currentPoint.ReturnY(), currentPoint.ReturnX());
-        if(totalNumberOfMines == 10)
-            continue;
-        
-        queue<Point> unexploredNeighborCells;
-
-        
-        unexploredNeighborCells.push(currentPoint);
-     
-        
-        while (!unexploredNeighborCells.empty())
+        if( b1.GetValue(p1, p2) != 10 )
         {
-            int numberOfRevealedMines = 0;              //this is to the particular current point
-            int numberOfRevealedSafe = 0;
-            int numberOfHiddenNeighbors = 0;
             
-            currentPoint = unexploredNeighborCells.front();
-            unexploredNeighborCells.pop();
-                    
-            totalNumberOfMines = b1.GetValue(currentPoint.ReturnY(), currentPoint.ReturnX());
-            neighbors = b1.GetNeighbors(currentPoint.ReturnY(), currentPoint.ReturnX());
+            Point currentPoint(p1, p2);
+            totalNumberOfMines = b1.GetValue(currentPoint.ReturnY(), currentPoint.ReturnX());           //now if we open a mine, it wont be there. also a flagged mine will never come because IsVisited
             
-            for (int i = 0; i < neighbors.size(); i++)
+            
+            queue<Point> unexploredNeighborCells;
+
+            
+            unexploredNeighborCells.push(currentPoint);
+         
+            
+            while (!unexploredNeighborCells.empty())
             {
-                //cout << "neighbor, x=" << neighbors[i].ReturnY() << " , y=" << neighbors[i].ReturnX() << endl;
-
-                //updating number of hidden neighbors
-                if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == false)
-                    numberOfHiddenNeighbors += 1;
-
-
-                if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == true)
-                {
-                    //updating number of revealed mines
-                    if (b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == 10 || b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == 20)
-                        numberOfRevealedMines += 1;
-
-                    //updating number of revealed safe neighbors
-                    if ((b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) >= 0) && (b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) <= 8))
-                        numberOfRevealedSafe += 1;
-                }
-
-
-            }
-            //checking rule 1
-            if (totalNumberOfMines - numberOfRevealedMines == numberOfHiddenNeighbors)
-            {
+                int numberOfRevealedMines = 0;              //this is to the particular current point
+                int numberOfRevealedSafe = 0;
+                int numberOfHiddenNeighbors = 0;
+                
+                currentPoint = unexploredNeighborCells.front();
+                unexploredNeighborCells.pop();
+                        
+                totalNumberOfMines = b1.GetValue(currentPoint.ReturnY(), currentPoint.ReturnX());
+                neighbors = b1.GetNeighbors(currentPoint.ReturnY(), currentPoint.ReturnX());
+                
                 for (int i = 0; i < neighbors.size(); i++)
                 {
+                    //cout << "neighbor, x=" << neighbors[i].ReturnY() << " , y=" << neighbors[i].ReturnX() << endl;
+
+                    //updating number of hidden neighbors
                     if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == false)
+                        numberOfHiddenNeighbors += 1;
+
+
+                    if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == true)
                     {
-                        //flagging the mines
-                        b1.SetFlag(neighbors[i].ReturnY(), neighbors[i].ReturnX());
-                        flaggedMines += 1;
-                        //unexploredNeighborCells.push(Point(neighbors[i].ReturnY(), neighbors[i].ReturnX()));
-                        //cout << "cell pushed in queue is " << neighbors[i].ReturnY() << " , " << neighbors[i].ReturnX() << endl;
+                        //updating number of revealed mines. This should include both the flagged and the flagged mine.
+                        if (b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == 10 || b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == 20)
+                            numberOfRevealedMines += 1;
+
+                        //updating number of revealed safe neighbors
+                        if ((b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) >= 0) && (b1.GetValue(neighbors[i].ReturnY(), neighbors[i].ReturnX()) <= 8))
+                            numberOfRevealedSafe += 1;
+                    }
+
+
+                }
+                //checking rule 1
+                if (totalNumberOfMines - numberOfRevealedMines == numberOfHiddenNeighbors)
+                {
+                    for (int i = 0; i < neighbors.size(); i++)
+                    {
+                        if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == false)
+                        {
+                            //flagging the mines
+                            b1.SetFlag(neighbors[i].ReturnY(), neighbors[i].ReturnX());
+                            flaggedMines += 1;
+                        }
                     }
                 }
-            }
 
-            //checking rule 2
-            if ((b1.GetNeighborCount(currentPoint.ReturnY(), currentPoint.ReturnX()) - totalNumberOfMines) - numberOfRevealedSafe == numberOfHiddenNeighbors)
-            {
-                for (int i = 0; i < neighbors.size(); i++)
+                //checking rule 2
+                if ((b1.GetNeighborCount(currentPoint.ReturnY(), currentPoint.ReturnX()) - totalNumberOfMines) - numberOfRevealedSafe == numberOfHiddenNeighbors)
                 {
-                    if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == false)
+                    for (int i = 0; i < neighbors.size(); i++)
                     {
-                        b1.OpenCell(neighbors[i].ReturnY(), neighbors[i].ReturnX());
-                        unexploredNeighborCells.push( Point(neighbors[i].ReturnY(), neighbors[i].ReturnX()) );
+                        if (b1.IsVisited(neighbors[i].ReturnY(), neighbors[i].ReturnX()) == false)
+                        {
+                            b1.OpenCell(neighbors[i].ReturnY(), neighbors[i].ReturnX());
+                            unexploredNeighborCells.push( Point(neighbors[i].ReturnY(), neighbors[i].ReturnX()) );
+                        }
                     }
                 }
             }
         }
         
-//*******************************************************************INFERENCECALCULATION******************************************
+//*******************************************************************INFERENCE CALCULATION******************************************
+        
         for(int i=0; i<inference_queue.size();i++)
         {
+            cout<<"Number of times inference happens"<<endl;
             Point inference_point = inference_queue[i];
             
             int totalNumberOfMines_infernece = b1.GetValue(inference_point.ReturnY(), inference_point.ReturnX());
             
-            if(totalNumberOfMines_infernece == 10 || totalNumberOfMines_infernece == 20){
-                cout << "Happens?"<<endl;
+            if(totalNumberOfMines_infernece == 10 || totalNumberOfMines_infernece == 20)
+            {
                 continue;
             }
 
@@ -198,8 +204,9 @@ int main()
         }
 //**********************************************************************************INFERNECECALCULATION*************************************************************
         
-        if(b1.GetValue(currentPoint.ReturnY(), currentPoint.ReturnX()) != 10 && b1.GetValue(currentPoint.ReturnY(), currentPoint.ReturnX()) != 20)
-            inference_queue.push_back(currentPoint);
+        Point add_point(p1,p2);
+        if(b1.GetValue(add_point.ReturnY(), add_point.ReturnX()) != 10 && b1.GetValue(add_point.ReturnY(), add_point.ReturnX()) != 20)
+            inference_queue.push_back(add_point);
         
         cout<<"size of inference queue:"<<inference_queue.size()<<endl;
         cout << "number of flagged mines: " << flaggedMines<< endl;
@@ -207,7 +214,7 @@ int main()
         
     }
     
-    b1.PrintUserBoard();
+   
     
     if(flaggedMines == n)
     {
