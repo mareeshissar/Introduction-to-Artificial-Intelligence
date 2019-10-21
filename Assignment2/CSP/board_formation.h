@@ -60,7 +60,7 @@ public:
 				p1 = 0 + rand() % (dimension);
 				p2 = 0 + rand() % (dimension);
 			} while (checkBoard[p1][p2] == true);
-			cout << i + 1 << ". " << "(" << p1 << "," << p2 << ")" << endl;               //printing the open position to swap
+			//cout << i + 1 << ". " << "(" << p1 << "," << p2 << ")" << endl;               //printing the open position to swap
 			checkBoard[p1][p2] = true;
 			boardArray[p1][p2] = 10;
 			GenerateValuesAroundMines(p1, p2);
@@ -155,7 +155,7 @@ public:
 
 	void SetFlag(int i, int j)
 	{
-		cout << "flagged mines " << i << "--" << j << endl;
+		//cout << "flagged mines " << i << "--" << j << endl;
 		userBoardArray[i][j]=20;
 		countUncovered+= 1 ;
 	}
@@ -307,7 +307,7 @@ public:
 	}
 
 	//returns a vector consisting of neighboring hidden cells
-	vector<Point> GetNeighborsCSP(int i, int j, int centrali, int centralj)
+	vector<Point> GetNeighborsCSP(int i, int j)
 	{
 		vector<Point> neighbors;
 		

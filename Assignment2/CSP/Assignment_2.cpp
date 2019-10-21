@@ -15,12 +15,14 @@ void print_queue(vector<Point> a);
 
 int main()
 { 
-	for (int iter = 0; iter < 1; iter++)
+	for (int iter = 0; iter < 10; iter++)
 	{ 
 		int baseline = 0;
 		int CSP = 0;
+
 		int d=100, n=1000;
 		vector<Point> neighbors;
+		vector<Point> neighborsWithinCSP;
 		int flaggedMines = 0;
 		int flaggedCSPMines = 0;
 		int numberOfMinesExploded = 0;			 //number of exploded mines
@@ -30,11 +32,11 @@ int main()
 		vector<Point> neighboursCSP;			//vector for storing individual csp equation
 		vector<vector<Point>> windowCSP;		//vector of vector for storing all the csp equations
 
-		/*cout << "Enter the dimension:";
+	/*	cout << "Enter the dimension:";
 		cin >> d;
 		cout << "Enter the number of mines:";
 		cin >> n;*/
-		Board b1(d, n);
+		Board b1(d,n);
 		//b1.PrintActualBoard();
 		//b1.PrintUserBoard();
 
@@ -85,6 +87,7 @@ int main()
 				unexploredNeighborCells.pop();
 
 				totalNumberOfMines = b1.GetValue(currentPoint.ReturnY(), currentPoint.ReturnX());
+				
 				neighbors = b1.GetNeighbors(currentPoint.ReturnY(), currentPoint.ReturnX());
 
 
@@ -147,7 +150,7 @@ int main()
 
 
 			//*******************************************************************INFERENCE CALCULATION**********************************************
-
+			
 			for (int i = 0; i < inference_queue.size(); i++)
 			{
 				Point inference_point = inference_queue[i];
@@ -214,15 +217,15 @@ int main()
 		
 			//**********************************************************************************INFERNECECALCULATION*************************************************************
 
-			cout << "number of flagged mines: " << flaggedMines << endl;
+		/*	cout << "number of flagged mines: " << flaggedMines << endl;
 			cout << "opened cells till now: " << b1.GetCountUncovered() << endl;
 
 			cout << "Printing user board after all the deductions are made using rule1 and rule 2" << endl;
 			b1.PrintUserBoard();
+*/
 
 
-
-			cout << "-----------------------------------------Now using CSP to infer more " << endl;
+			//cout << "-----------------------------------------Now using CSP to infer more " << endl;
 			//**********************************************************************************APPLYING CSP*************************************************************
 
 			//check for early termination
@@ -238,9 +241,75 @@ int main()
 						windowCSP.clear();
 						//cout << "for central cell " << i << " , " << j << endl;
 
-						//get all the neighbours of the central cell that have clue values
+						//get all the neighbours of the central cell that have clue values for checking whether they can be opened further
 						neighboursWithClue = b1.GetNeighborsWithClues(i, j);
 
+						for (int k = 0; k < neighboursWithClue.size(); k++)
+						{
+							int numberOfRevealedMines = 0;
+							int numberOfRevealedSafe = 0;
+							int numberOfHiddenNeighbors = 0;
+
+							neighborsWithinCSP.clear();
+
+							totalNumberOfMines = b1.GetValue(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX());
+							neighborsWithinCSP = b1.GetNeighbors(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX());
+
+							for (int i = 0; i < neighborsWithinCSP.size(); i++)
+							{
+								//cout << "neighbor, x=" << neighbors[i].ReturnY() << " , y=" << neighbors[i].ReturnX() << endl;
+
+								//updating number of hidden neighbors
+								if (b1.IsVisited(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) == false)
+									numberOfHiddenNeighbors += 1;
+
+								if (b1.IsVisited(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) == true)
+								{
+									//updating number of revealed mines
+									if (b1.GetValue(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) == 10 || b1.GetValue(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) == 20)
+										numberOfRevealedMines += 1;
+
+									//updating number of revealed safe neighbors
+									if ((b1.GetValue(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) >= 0) && (b1.GetValue(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) <= 8))
+										numberOfRevealedSafe += 1;
+								}
+
+
+							}
+
+							//checking rule 1
+							if (totalNumberOfMines - numberOfRevealedMines == numberOfHiddenNeighbors)
+							{
+								for (int i = 0; i < neighborsWithinCSP.size(); i++)
+								{
+									if (b1.IsVisited(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) == false)
+									{
+										b1.SetFlag(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX());                                 //flagging the mines
+										flaggedMines += 1;
+										++CSP;
+									}
+								}
+							}
+
+
+							//checking rule 2
+							if ((8 - totalNumberOfMines) - numberOfRevealedSafe == numberOfHiddenNeighbors)
+							{
+								for (int i = 0; i < neighborsWithinCSP.size(); i++)
+								{
+									if (b1.IsVisited(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()) == false)
+									{
+										b1.OpenCell(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX());
+										unexploredNeighborCells.push(Point(neighborsWithinCSP[i].ReturnY(), neighborsWithinCSP[i].ReturnX()));
+										inference_queue.push_back(neighborsWithinCSP[i]);                                                            //adding safe points to the queue.
+									}
+								}
+							}
+						}
+
+						//get all the neighbours of the central cell that have clue values
+						neighboursWithClue.clear();
+						neighboursWithClue = b1.GetNeighborsWithClues(i, j);
 
 						for (int k = 0; k < neighboursWithClue.size(); k++)
 						{
@@ -276,23 +345,26 @@ int main()
 
 							}
 
+							
 
-							neighboursCSP = b1.GetNeighborsCSP(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX(), i, j);
 
-							if (neighboursCSP.size() != 0)
-								//cout << "no of hidden neighbors of " << neighboursWithClue[k].ReturnY() << " , " << neighboursWithClue[k].ReturnX() << "are " << neighboursCSP.size() << endl;
+							neighboursCSP = b1.GetNeighborsCSP(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX());
 
-								if (neighboursCSP.size() != 0 && neighboursCSP.size() != (totalNumberOfMines - numberOfRevealedMines))
-								{
-									//adding point with clue value at the end
-									Point temp(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX());
-									//reduce the number of mines from clue value
-									temp.SetPointClueValue(b1.GetValue(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX()) - numberOfRevealedMines);
-									neighboursCSP.push_back(temp);
+							//cout << "no of hidden neighbors of " << neighboursWithClue[k].ReturnY() << " , " << neighboursWithClue[k].ReturnX() << "are " << neighboursCSP.size() << endl;
 
-									windowCSP.push_back(neighboursCSP);
-								}
 
+
+							if (neighboursCSP.size() != 0 && neighboursCSP.size() != (totalNumberOfMines - numberOfRevealedMines) && (totalNumberOfMines - numberOfRevealedMines) != 0)
+							{
+								//adding point with clue value at the end
+								Point temp(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX());
+								//reduce the number of mines from clue value
+								temp.SetPointClueValue(b1.GetValue(neighboursWithClue[k].ReturnY(), neighboursWithClue[k].ReturnX()) - numberOfRevealedMines);
+								neighboursCSP.push_back(temp);
+
+								windowCSP.push_back(neighboursCSP);
+							}
+						
 
 						}
 
@@ -315,11 +387,11 @@ int main()
 						int shorterEquationSize;
 						int longerEquation;
 						int shorterEquation;
-
+						
 
 						for (int a = 0; a < windowCSP.size(); a++)
 						{
-							for (int b = a + 1; b < windowCSP.size(); b++)
+							for (int b = a+1; b < windowCSP.size(); b++)
 							{
 								vector<Point> firstEquation;
 								vector<Point> secondEquation;
@@ -374,8 +446,48 @@ int main()
 
 								}
 								//cout << "----------------total count" << totalCount << endl;
+								int numRevealedMines = 0;
+								vector<Point> neighbors1;
+								neighbors1.clear();
+									neighbors1 = b1.GetNeighbors(windowCSP[a][windowCSP[a].size() - 1].ReturnY(), windowCSP[a][windowCSP[a].size() - 1].ReturnX());
+									for (int i = 0; i < neighbors1.size(); i++)
+									{
+									
+										if (b1.IsVisited(neighbors1[i].ReturnY(), neighbors1[i].ReturnX()) == true)
+										{
+											//updating number of revealed mines
+											if (b1.GetValue(neighbors1[i].ReturnY(), neighbors1[i].ReturnX()) == 10 || b1.GetValue(neighbors1[i].ReturnY(), neighbors1[i].ReturnX()) == 20)
+												numRevealedMines += 1;
+
+										}
+
+
+									}
+								
+								
+								windowCSP[a][windowCSP[a].size() - 1].SetPointClueValue(b1.GetValue(windowCSP[a][windowCSP[a].size() - 1].ReturnY(), windowCSP[a][windowCSP[a].size() - 1].ReturnX()) - numRevealedMines);
+								
+								numRevealedMines = 0;
+								neighbors1.clear();
+								neighbors1 = b1.GetNeighbors(windowCSP[b][windowCSP[b].size() - 1].ReturnY(), windowCSP[b][windowCSP[b].size() - 1].ReturnX());
+								for (int i = 0; i < neighbors1.size(); i++)
+								{
+
+									if (b1.IsVisited(neighbors1[i].ReturnY(), neighbors1[i].ReturnX()) == true)
+									{
+										//updating number of revealed mines
+										if (b1.GetValue(neighbors1[i].ReturnY(), neighbors1[i].ReturnX()) == 10 || b1.GetValue(neighbors1[i].ReturnY(), neighbors1[i].ReturnX()) == 20)
+											numRevealedMines += 1;
+
+									}
+
+
+								}
+								windowCSP[b][windowCSP[b].size() - 1].SetPointClueValue(b1.GetValue(windowCSP[b][windowCSP[b].size() - 1].ReturnY(), windowCSP[b][windowCSP[b].size() - 1].ReturnX()) - numRevealedMines);
+
 								diffenceOfValues = abs(windowCSP[a][windowCSP[a].size() - 1].GetPointClueValue() - windowCSP[b][windowCSP[b].size() - 1].GetPointClueValue());
 
+								
 								//if totacount == difference of values then that cell is definetly a mine and the shorter equation is a subset of the longer equation
 								if (totalCountLongerEquation == diffenceOfValues && diffenceOfValues > 0 && totalCountShorterEquation == 0)
 								{
@@ -387,20 +499,25 @@ int main()
 											cout << "-------------------------point " << windowCSP[longerEquation][d].ReturnY() << " " << windowCSP[longerEquation][d].ReturnX() << " flagged as mine by csp" << endl;
 											//flagging the mines
 											b1.SetFlag(windowCSP[longerEquation][d].ReturnY(), windowCSP[longerEquation][d].ReturnX());
-
+											
 											flaggedMines += 1;
 											flaggedCSPMines += 1;
 											++CSP;
+											
+											
 										}
+									
 
 									}
 
 								}
 
+								
 								//copying back the original equation
 								windowCSP[a] = firstEquation;
 								windowCSP[b] = secondEquation;
-
+								
+							
 							}
 
 						}
@@ -412,27 +529,26 @@ int main()
 			}
 			else
 				break;
-			cout << "number of flagged mines after csp- " << flaggedMines << endl;
-			cout << "opened cells till now after csp- " << b1.GetCountUncovered() << endl;
+			/*cout << "number of flagged mines after csp- " << flaggedMines << endl;
+			cout << "opened cells till now after csp- " << b1.GetCountUncovered() << endl;*/
 
 
 			//cout << "Printing user board after all the deductions are made using CSP" << endl;
 			//b1.PrintUserBoard();
 
 		}
-		cout << "number of flagged mines- " << flaggedMines << endl;
-		cout << "number of flagged CSP mines- " << flaggedCSPMines << endl;
-		cout << "opened cells till now- " << b1.GetCountUncovered() << endl;
-		cout << "number of flagged mines using baseline- " << baseline << endl;
-		cout << "number of flagged mines using CSP- " << CSP << endl;
+		cout << "number of flagged mines totally- " << flaggedMines << endl;
+		cout << "number of flagged CSP mines totally - " << flaggedCSPMines << endl;
+		cout << "opened cells till now totally- " << b1.GetCountUncovered() << endl;
+		cout << "mines exploded till now totally- " << numberOfMinesExploded << endl;
 
 
-		b1.PrintUserBoard();
+		//b1.PrintUserBoard();
 
 
 	}
 	
-
+	
 
 	return 0;
 
@@ -448,3 +564,4 @@ void print_queue(vector<Point> a)
 
 	}
 }
+
