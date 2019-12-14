@@ -261,14 +261,20 @@ print(y_new[0])
 print(y_new[1])
 print(y_new[2])
 
-learning_rate=0.1
-num_of_hidden=50
-num_of_iter=500
+learning_rate=10e-6
+num_of_hidden=60
+num_of_iter=1000
 target_error = 0.1
 
 
 def act_funct(x):
     return 1/( 1+np.exp(-x) )
+
+
+def softmax_act_funct(x):
+    y=np.exp(x.T) / np.sum(np.exp(x.T), axis=0)
+    return y.T
+
 
 def slope_act_funct(x):
     return x*(1-x)
@@ -302,7 +308,7 @@ def train(x_new,y_new,num_of_hidden,num_of_iter, target_error):
         l2 = np.matmul(l1, w2)
         #print('l2 shape before act')
         #print(l2.shape)
-        l2 = act_funct(l2)  # final output after activation
+        l2 = softmax_act_funct(l2)  # final output after activation
         #print('l2 shape after act')
         #print(l2.shape)
 
@@ -310,16 +316,16 @@ def train(x_new,y_new,num_of_hidden,num_of_iter, target_error):
         #print('values of y_new and corresponding l2')
         #print(y_new[0])
         #print(y_new[1])
-        #print(l2[0])
-        #print(l2[1])
 
         epsilon = 1e-9
-        loss = - ( (y_new * np.log(l2+epsilon)) + ((1 - y_new) * np.log(1 - l2+epsilon)) )
+        if(j%100==0):
+            loss =np.sum( - (y_new * np.log(l2+epsilon))  )
+            print("Loss after " + str(j) + " iterations: ", loss)
+            print(y_new[0])
+            print(l2[0])
+            #print(sum(l2[0]))
 
-        if(j%50==0):
-            print("Loss after " + str(j) + " iterations: ", np.mean(loss))
-
-        delta2 = (l2-y_new)  # element-wise multiplication
+        delta2 = l2-y_new  # element-wise multiplication
         #print('delta_shape')
         #print(delta2.shape)
 
